@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "BOSS Candidate Greeting Assistant",
+  "version": "0.1.8",
+  "description": "Filter BOSS candidates by job-related experience and assist greeting up to 60 people.",
+  "permissions": ["storage", "activeTab", "scripting", "tabs", "debugger", "webNavigation"],
+  "host_permissions": ["https://www.zhipin.com/*", "https://*.zhipin.com/*"],
+  "action": {
+    "default_title": "BOSS Greeting Assistant",
+    "default_popup": "src/popup/popup.html"
+  },
+  "background": {
+    "service_worker": "src/background/serviceWorker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.zhipin.com/*", "https://*.zhipin.com/*"],
+      "js": [
+        "src/content/domSelectors.js",
+        "src/content/auditLogger.js",
+        "src/content/safetyGuards.js",
+        "src/content/candidateScanner.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ]
+}

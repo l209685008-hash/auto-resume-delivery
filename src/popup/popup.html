@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BOSS 打招呼助手</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="popup">
+      <header>
+        <h1>BOSS 打招呼助手</h1>
+        <p id="status">未连接</p>
+      </header>
+
+      <section class="controls" aria-label="运行设置">
+        <label>
+          <span>最多打招呼人数</span>
+          <input id="maxGreetings" type="number" min="1" max="60" value="60">
+        </label>
+        <label>
+          <span>最小间隔秒</span>
+          <input id="minDelay" type="number" min="0.5" max="60" step="0.1" value="0.5">
+        </label>
+        <label>
+          <span>最大间隔秒</span>
+          <input id="maxDelay" type="number" min="0.5" max="90" step="0.1" value="0.9">
+        </label>
+        <label class="switch">
+          <input id="dryRun" type="checkbox">
+          <span>Dry Run 只筛选不点击</span>
+        </label>
+        <label class="switch">
+          <input id="confirmEach" type="checkbox">
+          <span>每个候选人逐个确认</span>
+        </label>
+      </section>
+
+      <section class="stats" aria-label="运行统计">
+        <div><span>扫描</span><strong id="processed">0</strong></div>
+        <div><span>符合</span><strong id="eligible">0</strong></div>
+        <div><span>打招呼</span><strong id="greeted">0</strong></div>
+        <div><span>跳过</span><strong id="skipped">0</strong></div>
+        <div><span>未确认</span><strong id="unconfirmed">0</strong></div>
+      </section>
+
+      <p id="failure" class="failure" hidden></p>
+
+      <section class="actions" aria-label="操作">
+        <button id="start" type="button">开始</button>
+        <button id="stop" type="button" class="secondary">停止</button>
+      </section>
+
+      <section class="actions small" aria-label="审计">
+        <button id="exportAudit" type="button" class="secondary">导出审计</button>
+        <button id="clearAudit" type="button" class="danger">清空审计</button>
+      </section>
+
+      <p class="rule">规则：有明确工作经验且命中当前职位相关行业即可；页面显示“继续沟通”才算成功。</p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
