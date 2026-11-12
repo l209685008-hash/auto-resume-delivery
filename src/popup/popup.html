@@ -1,63 +1,158 @@
 <!doctype html>
+<!--
+Lucide icons (ISC), https://lucide.dev
+Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part
+of Feather (MIT). All other copyright (c) for Lucide are held by Lucide
+Contributors 2022.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-->
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BOSS 打招呼助手</title>
+    <title>财务专业 · 跨境关键词</title>
     <link rel="stylesheet" href="popup.css">
   </head>
   <body>
-    <main class="popup">
-      <header>
-        <h1>BOSS 打招呼助手</h1>
-        <p id="status">未连接</p>
+    <main class="workbench">
+      <header class="page-header">
+        <p class="eyebrow">BOSS 招聘工作台</p>
+        <h1 id="profileTitle">财务专业 · 跨境关键词</h1>
+        <div id="connection" class="connection" data-kind="connecting">
+          <span class="connection-dot" aria-hidden="true"></span>
+          <span id="connectionLabel">正在连接</span>
+          <span id="sourceBadge" class="source-badge">等待实时状态</span>
+          <div class="header-tools">
+            <button id="reconnect" class="icon-button" type="button" title="重新连接" aria-label="重新连接">
+              <svg class="icon lucide lucide-refresh-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.36-6.36L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.36 6.36L3 16"/><path d="M8 16H3v5"/></svg>
+            </button>
+            <button id="openSidePanel" class="icon-button" type="button" title="打开侧边栏" aria-label="打开侧边栏" disabled>
+              <svg class="icon lucide lucide-panel-right-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m10 15-3-3 3-3"/></svg>
+            </button>
+          </div>
+        </div>
+        <p id="connectionMessage" class="connection-message" hidden></p>
+        <button id="exportDiagnostics" class="diagnostics-button" type="button" hidden>
+          <svg class="icon lucide lucide-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+          <span>导出页面诊断</span>
+        </button>
       </header>
 
-      <section class="controls" aria-label="运行设置">
-        <label>
-          <span>最多打招呼人数</span>
-          <input id="maxGreetings" type="number" min="1" max="60" value="60">
-        </label>
-        <label>
-          <span>最小间隔秒</span>
-          <input id="minDelay" type="number" min="0.5" max="60" step="0.1" value="0.5">
-        </label>
-        <label>
-          <span>最大间隔秒</span>
-          <input id="maxDelay" type="number" min="0.5" max="90" step="0.1" value="0.9">
-        </label>
-        <label class="switch">
-          <input id="dryRun" type="checkbox">
-          <span>Dry Run 只筛选不点击</span>
-        </label>
-        <label class="switch">
-          <input id="confirmEach" type="checkbox">
-          <span>每个候选人逐个确认</span>
-        </label>
+      <section class="controls-section" aria-label="运行控制">
+        <fieldset class="mode-fieldset">
+          <legend>运行方式</legend>
+          <div class="segmented mode-selector">
+            <label><input id="dryRun" type="radio" name="runMode" value="scan" checked><span>只扫描</span></label>
+            <label><input id="greetMode" type="radio" name="runMode" value="greet"><span>筛选并打招呼</span></label>
+          </div>
+        </fieldset>
+
+        <div class="run-actions">
+          <button id="start" class="primary-button" type="button" disabled>
+            <svg class="icon lucide lucide-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            <span id="startLabel">开始扫描</span>
+          </button>
+          <button id="stop" class="stop-button" type="button" disabled>
+            <svg class="icon lucide lucide-square" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+            <span>停止</span>
+          </button>
+        </div>
+
+        <details class="settings">
+          <summary><span>运行设置</span><span id="settingsSummary" class="metadata">扫描 100 人 · 打招呼 60 人 · 2–5 秒</span></summary>
+          <div class="settings-fields">
+            <label class="number-setting" for="maxCandidates"><span>扫描人数上限</span><span class="number-with-unit"><input id="maxCandidates" type="number" min="1" max="100" step="1" value="100" inputmode="numeric"><span>人</span></span></label>
+            <label class="number-setting" for="maxGreetings"><span>打招呼上限</span><span class="number-with-unit"><input id="maxGreetings" type="number" min="1" max="60" step="1" value="60" inputmode="numeric"><span>人</span></span></label>
+            <div class="delay-settings">
+              <label for="minDelay"><span>最小间隔 / 秒</span><input id="minDelay" type="number" min="0.5" max="60" step="0.1" value="2" inputmode="decimal"></label>
+              <label for="maxDelay"><span>最大间隔 / 秒</span><input id="maxDelay" type="number" min="0.5" max="90" step="0.1" value="5" inputmode="decimal"></label>
+            </div>
+            <label class="checkbox-setting"><input id="confirmEach" type="checkbox"><span>每位候选人发送前确认</span></label>
+          </div>
+        </details>
+
+        <p id="actionNote" class="action-note" role="status" aria-live="polite" hidden></p>
       </section>
 
-      <section class="stats" aria-label="运行统计">
-        <div><span>扫描</span><strong id="processed">0</strong></div>
-        <div><span>符合</span><strong id="eligible">0</strong></div>
-        <div><span>打招呼</span><strong id="greeted">0</strong></div>
-        <div><span>跳过</span><strong id="skipped">0</strong></div>
-        <div><span>未确认</span><strong id="unconfirmed">0</strong></div>
+      <section class="requirements-section" aria-labelledby="requirementsTitle">
+        <div class="section-heading">
+          <h2 id="requirementsTitle">岗位要求</h2>
+          <span id="profileVersion" class="metadata"></span>
+        </div>
+        <p id="ruleError" class="notice" hidden>岗位规则未加载，请重新加载扩展。</p>
+        <ul id="requirements" class="requirements"></ul>
+        <details class="requirements-details">
+          <summary>完整岗位说明</summary>
+          <ul id="requirementDescriptions" class="requirement-descriptions"></ul>
+        </details>
       </section>
 
-      <p id="failure" class="failure" hidden></p>
-
-      <section class="actions" aria-label="操作">
-        <button id="start" type="button">开始</button>
-        <button id="stop" type="button" class="secondary">停止</button>
+      <section class="run-section" aria-label="运行状态">
+        <div class="run-heading">
+          <strong id="status" role="status" aria-live="polite">正在连接</strong>
+          <time id="updatedAt" class="metadata">尚无记录</time>
+        </div>
+        <p id="message" class="run-message">等待页面状态</p>
+        <dl class="run-context">
+          <div><dt>页面岗位</dt><dd id="currentJob">未识别</dd></div>
+          <div id="currentCandidateRow" hidden><dt id="candidateLabel">当前候选</dt><dd id="currentCandidate"></dd></div>
+          <div><dt>运行阶段</dt><dd id="phase">待开始</dd></div>
+          <div><dt id="failureLabel">停止原因</dt><dd id="failure">尚未运行</dd></div>
+        </dl>
       </section>
 
-      <section class="actions small" aria-label="审计">
-        <button id="exportAudit" type="button" class="secondary">导出审计</button>
-        <button id="clearAudit" type="button" class="danger">清空审计</button>
+      <section class="stats-section" aria-label="筛选与发送统计">
+        <div class="stats">
+          <div class="stat-match"><span>符合</span><strong id="eligible">0</strong></div>
+          <div class="stat-reject"><span>不符合</span><strong id="rejected">0</strong></div>
+          <div class="stat-sent"><span>发送成功</span><strong id="greeted">0</strong></div>
+        </div>
+        <p class="scan-counts">
+          <span>已扫描 <b id="processed">0</b></span>
+          <span>点击 <b id="clickAttempts">0</b></span>
+          <span>未确认 <b id="unconfirmed">0</b></span>
+          <span>模拟符合 <b id="dryRunMatches">0</b></span>
+        </p>
       </section>
 
-      <p class="rule">规则：有明确工作经验且命中当前职位相关行业即可；页面显示“继续沟通”才算成功。</p>
+      <section class="results-section" aria-labelledby="resultsTitle">
+        <div class="section-heading results-heading">
+          <div class="results-title"><h2 id="resultsTitle">最近候选</h2><span id="resultCount" class="metadata">0 人</span></div>
+          <div class="audit-actions" aria-label="审计记录">
+            <button id="exportAudit" class="icon-button" type="button" title="下载审计 JSON" aria-label="下载审计 JSON">
+              <svg class="icon lucide lucide-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg>
+            </button>
+            <button id="clearAttempts" class="icon-button destructive" type="button" title="清空发送记录（允许重新发送）" aria-label="清空发送记录" disabled>
+              <svg class="icon lucide lucide-rotate-ccw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button id="clearAudit" class="icon-button destructive" type="button" title="清空审计记录" aria-label="清空审计记录" disabled>
+              <svg class="icon lucide lucide-trash-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M10 11v6M14 11v6M5 6l1 14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1l1-14M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+        </div>
+        <fieldset class="filter-fieldset">
+          <legend class="sr-only">候选结果筛选</legend>
+          <div class="result-filters">
+            <label><input id="filterAll" type="radio" name="resultFilter" value="all" checked><span>全部</span></label>
+            <label><input id="filterMatch" type="radio" name="resultFilter" value="match"><span>符合</span></label>
+            <label><input id="filterReject" type="radio" name="resultFilter" value="reject"><span>不符合</span></label>
+          </div>
+        </fieldset>
+        <ol id="candidateList" class="candidate-list"></ol>
+        <div id="emptyState" class="empty-state"><strong id="emptyTitle">暂无候选结果</strong><p id="emptyMessage">扫描后的候选人将在此显示。</p></div>
+      </section>
+      <footer class="run-footer"><span>本轮编号</span><span id="runId">尚未开始</span></footer>
     </main>
+    <script src="../content/financeRules.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

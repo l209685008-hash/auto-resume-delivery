@@ -9,4 +9,6 @@ Thumbs.db
 *.tmp
 *.zip
 dist/
+node_modules/
+test-results/
 

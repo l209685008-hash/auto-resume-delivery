@@ -2,8 +2,10 @@
   "use strict";
 
   const MAX_LIMIT = 60;
-  const DEFAULT_MIN_DELAY_MS = 500;
-  const DEFAULT_MAX_DELAY_MS = 900;
+  const MAX_CANDIDATES = 100;
+  // 招聘端两个活跃项目分别用 2–5 秒与 25–70 秒；0.5–0.9 秒明显偏快，默认值对齐 2–5 秒。
+  const DEFAULT_MIN_DELAY_MS = 2000;
+  const DEFAULT_MAX_DELAY_MS = 5000;
   const MAX_RUNTIME_MS = 30 * 60 * 1000;
   const MAX_EMPTY_LOADS = 8;
 
@@ -15,12 +17,14 @@
 
   function normalizeConfig(config) {
     const normalized = config || {};
+    const maxCandidates = normalized.maxCandidates == null || normalized.maxCandidates === "" ? MAX_CANDIDATES : normalized.maxCandidates;
     const minDelayMs = clampNumber(normalized.minDelayMs, 500, 60000, DEFAULT_MIN_DELAY_MS);
     const maxDelayMs = clampNumber(normalized.maxDelayMs, minDelayMs, 90000, DEFAULT_MAX_DELAY_MS);
     return {
-      dryRun: normalized.dryRun === true,
-      maxGreetings: clampNumber(normalized.maxGreetings, 1, MAX_LIMIT, MAX_LIMIT),
-      minExperienceMonths: 0,
+      profileId: "cross_border_finance",
+      dryRun: normalized.dryRun !== false,
+      maxCandidates: Math.floor(clampNumber(maxCandidates, 1, MAX_CANDIDATES, MAX_CANDIDATES)),
+      maxGreetings: Math.floor(clampNumber(normalized.maxGreetings, 1, MAX_LIMIT, 30)),
       minDelayMs,
       maxDelayMs,
       requirePerCandidateConfirm: normalized.requirePerCandidateConfirm === true,
@@ -37,20 +41,16 @@
   }
 
   function detectHumanRequiredBlocker() {
-    const text = window.BossGreetingSelectors.getPageText();
-    const hardBlock = ["验证码", "安全验证", "账号异常", "访问过于频繁", "请完成验证"].find((word) =>
-      text.includes(word)
-    );
-    if (hardBlock) return hardBlock;
-
-    const hasCandidateSurface =
-      window.BossGreetingSelectors.getCandidateCards().length > 0 ||
-      (text.includes("推荐牛人") && text.includes("打招呼"));
-    if (hasCandidateSurface) return "";
-
-    return ["扫码登录", "请登录", "立即登录", "登录后", "手机号码登录", "密码登录", "登录BOSS直聘"].find((word) =>
-      text.includes(word)
-    ) || "";
+    const selectors = window.BossGreetingSelectors;
+    const surfaces = Array.from(document.querySelectorAll(
+      "[role='dialog'], [role='alert'], .toast, .notice, [class*='verify'], [class*='captcha'], [class*='security'], [class*='risk'], [class*='login']"
+    )).filter(selectors.visible);
+    const text = surfaces.map((element) => element.innerText || "").join(" ");
+    const words = ["验证码", "安全验证", "账号异常", "访问过于频繁", "操作过于频繁", "操作频繁", "请完成验证", "今日打招呼次数已用完", "打招呼已达上限", "扫码登录", "请登录", "立即登录", "手机号码登录", "密码登录"];
+    const explicit = words.find((word) => text.includes(word));
+    if (explicit) return explicit;
+    if (selectors.getCandidateCards().length) return "";
+    return words.find((word) => selectors.getPageText().includes(word)) || "";
   }
 
   function isElementDisabled(element) {

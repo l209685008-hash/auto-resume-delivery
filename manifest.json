@@ -1,13 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "BOSS Candidate Greeting Assistant",
-  "version": "0.1.8",
-  "description": "Filter BOSS candidates by job-related experience and assist greeting up to 60 people.",
-  "permissions": ["storage", "activeTab", "scripting", "tabs", "debugger", "webNavigation"],
+  "minimum_chrome_version": "116",
+  "name": "BOSS 自动招聘助手 · 财务关键词版",
+  "version": "0.5.6",
+  "description": "大专及以上财务相关专业 + 跨境电商关键词命中的证据筛选与打招呼助手。",
+  "permissions": ["storage", "activeTab", "scripting", "tabs", "debugger", "webNavigation", "sidePanel"],
   "host_permissions": ["https://www.zhipin.com/*", "https://*.zhipin.com/*"],
   "action": {
-    "default_title": "BOSS Greeting Assistant",
+    "default_title": "BOSS 财务招聘助手",
     "default_popup": "src/popup/popup.html"
+  },
+  "side_panel": {
+    "default_path": "src/popup/popup.html"
   },
   "background": {
     "service_worker": "src/background/serviceWorker.js"
@@ -16,9 +20,12 @@
     {
       "matches": ["https://www.zhipin.com/*", "https://*.zhipin.com/*"],
       "js": [
+        "src/content/candidateIdentity.js",
         "src/content/domSelectors.js",
         "src/content/auditLogger.js",
         "src/content/safetyGuards.js",
+        "src/content/financeRules.js",
+        "src/content/profileExtractor.js",
         "src/content/candidateScanner.js"
       ],
       "run_at": "document_idle",

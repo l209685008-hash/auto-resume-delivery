@@ -1,0 +1,17 @@
+{
+  "name": "boss-cross-border-finance-assistant",
+  "version": "0.5.6",
+  "private": true,
+  "description": "BOSS cross-border e-commerce finance recruitment assistant",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "verify:browser": "node scripts/verify-browser.cjs",
+    "verify:popup": "node scripts/verify-popup.cjs",
+    "verify:edge": "node scripts/verify-edge.cjs",
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "verify:click": "node scripts/verify-click.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}
